@@ -1,3 +1,4 @@
+#!/bin/bash
 #
 # Sets up environment for qlogin parallel job
 # since SGE can't/wont do this for us
@@ -7,12 +8,12 @@ JOB=$(ps -p $PPID -o cmd= | awk '{ print $1 }' | cut -d'-' -f2)
 
 ENVFILE=/var/spool/gridengine/$(hostname -s)/active_jobs/${JOB}.1/environment
 
-eval $(egrep -v "^(PATH|LD_LIBRARY_PATH|DISPLAY)" $ENVFILE | sed 's/^/export /g')
+eval "$(egrep -v '^(PATH|LD_LIBRARY_PATH|DISPLAY)' "$ENVFILE" | sed 's/^/export /g')"
 
-NP=$(awk -F'=' '/^PATH/ { print $2 }' $ENVFILE)
-NLLP=$(awk -F'=' '/^LD_LIBRARY_PATH/ { print $2 }' $ENVFILE)
+NP=$(awk -F'=' '/^PATH/ { print $2 }' "$ENVFILE")
+NLLP=$(awk -F'=' '/^LD_LIBRARY_PATH/ { print $2 }' "$ENVFILE")
 
 [[ -n "$NP" ]] && PATH=$NP:$PATH
-[[ -n "$LLP" ]] && LD_LIBRARY_PATH=$LLP:$LD_LIBRARY_PATH
+[[ -n "$NLLP" ]] && LD_LIBRARY_PATH=$NLLP:$LD_LIBRARY_PATH
 
 export PATH LD_LIBRARY_PATH
