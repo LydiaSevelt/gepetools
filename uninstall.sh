@@ -30,7 +30,7 @@ fi
 export QUEUE_PREFIX=gepetools
 
 if [[ -d "$installDir" && -f "$installDir/.gepetools.install" ]]; then
-    sudo rm -rf "$installDir"
+    rm -rf "$installDir"
 else
     echo "Specified installation directory, '$installDir', appears invalid! Bailing..."
     exit 1
@@ -45,8 +45,6 @@ done
 for pe in $(qconf -spl | grep "${QUEUE_PREFIX}_"); do
     qconf -dp "$pe"
 done
-
-echo "You should have root privs for this next part.  Hope you're in sudoers..."
 
 # Add complex values to queues
 for queue in $(qconf -sql); do

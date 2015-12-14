@@ -34,9 +34,8 @@ if [[ -z "$installDir" ]]; then
   exit 1
 fi
 
-echo "You should have root privs for this.  Hope you're in sudoers..."
-sudo mkdir -p $installDir
-sudo chmod 755 $installDir
+mkdir -p $installDir
+chmod 755 $installDir
 ppns=( 1 2 3 4 5 6 8 10 12 16 24 32 )
 
 for queue in $(qconf -sql); do
@@ -94,33 +93,33 @@ rm -f /tmp/pefile.$$
 
 echo "You should have root privs for this next part.  Hope you're in sudoers..."
 
-sudo install --owner=root --group=root --mode=755 startpe.sh $installDir/
-sudo sed -i "s|%%INSTALL_DIR%%|$installDir|g" $installDir/startpe.sh
+install --owner=root --group=root --mode=755 startpe.sh $installDir/
+sed -i "s|%%INSTALL_DIR%%|$installDir|g" $installDir/startpe.sh
 
-sudo install --owner=root --group=root --mode=755 stoppe.sh $installDir/
-sudo sed -i "s|%%INSTALL_DIR%%|$installDir|g" $installDir/stoppe.sh
+install --owner=root --group=root --mode=755 stoppe.sh $installDir/
+sed -i "s|%%INSTALL_DIR%%|$installDir|g" $installDir/stoppe.sh
 
-sudo install --owner=root --group=root --mode=755 getjidprocinfo $installDir/
-sudo sed -i "s|%%INSTALL_DIR%%|$installDir|g" $installDir/getjidprocinfo
+install --owner=root --group=root --mode=755 getjidprocinfo $installDir/
+sed -i "s|%%INSTALL_DIR%%|$installDir|g" $installDir/getjidprocinfo
 
-sudo install --owner=root --group=root --mode=755 extJobInfo $installDir/
-sudo sed -i "s|%%INSTALL_DIR%%|$installDir|g" $installDir/extJobInfo
+install --owner=root --group=root --mode=755 extJobInfo $installDir/
+sed -i "s|%%INSTALL_DIR%%|$installDir|g" $installDir/extJobInfo
 
-sudo install --owner=root --group=root --mode=755 rshExtJobInfo $installDir/
-sudo sed -i "s|%%INSTALL_DIR%%|$installDir|g" $installDir/rshExtJobInfo
+install --owner=root --group=root --mode=755 rshExtJobInfo $installDir/
+sed -i "s|%%INSTALL_DIR%%|$installDir|g" $installDir/rshExtJobInfo
 
-sudo install --owner=root --group=root --mode=755 rshExtWrap $installDir/
-sudo sed -i "s|%%INSTALL_DIR%%|$installDir|g" $installDir/rshExtWrap
+install --owner=root --group=root --mode=755 rshExtWrap $installDir/
+sed -i "s|%%INSTALL_DIR%%|$installDir|g" $installDir/rshExtWrap
 
-sudo install --owner=root --group=root --mode=755 rsh $installDir/
+install --owner=root --group=root --mode=755 rsh $installDir/
 
-sudo install --owner=root --group=root --mode=755 pe.jsv $installDir/
-sudo sed -i "s|%%QUEUE_PREFIX%%|$QUEUE_PREFIX|g" $installDir/pe.jsv
+install --owner=root --group=root --mode=755 pe.jsv $installDir/
+sed -i "s|%%QUEUE_PREFIX%%|$QUEUE_PREFIX|g" $installDir/pe.jsv
 
-sudo install --owner=root --group=root --mode=644 pe_env_setup $installDir/
-sudo sed -i "s|%%INSTALL_DIR%%|$installDir|g" $installDir/pe_env_setup
+install --owner=root --group=root --mode=644 pe_env_setup $installDir/
+sed -i "s|%%INSTALL_DIR%%|$installDir|g" $installDir/pe_env_setup
 
-sudo touch $installDir/.gepetools.install
+touch $installDir/.gepetools.install
 
 # Add complex attributes
 qconf -sc >> /tmp/complexAttribs.$$
