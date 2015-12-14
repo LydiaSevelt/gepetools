@@ -95,8 +95,6 @@ PeHostfile2LAMbootSchema $pe_hostfile >> $TMPDIR/machines.lam
 PeHostfile2Linda $pe_hostfile >> $TMPDIR/machines.linda
 PeHostfile2Ansys $pe_hostfile >> $TMPDIR/machines.ansys
 
-ln -s %%INSTALL_DIR%%/mpdboot $TMPDIR/mpdboot
-
 # Make script wrapper for 'rsh' available in jobs tmp dir
 rsh_wrapper=%%INSTALL_DIR%%/rsh
 if [ ! -x $rsh_wrapper ]; then

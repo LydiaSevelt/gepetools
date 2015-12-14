@@ -112,9 +112,6 @@ sudo sed -i "s|%%INSTALL_DIR%%|$installDir|g" $installDir/rshExtJobInfo
 sudo install --owner=root --group=root --mode=755 rshExtWrap $installDir/
 sudo sed -i "s|%%INSTALL_DIR%%|$installDir|g" $installDir/rshExtWrap
 
-sudo install --owner=root --group=root --mode=755 mpdboot $installDir/
-sudo sed -i "s|%%INSTALL_DIR%%|$installDir|g" $installDir/mpdboot
-
 sudo install --owner=root --group=root --mode=755 rsh $installDir/
 
 sudo install --owner=root --group=root --mode=755 pe.jsv $installDir/
@@ -123,12 +120,6 @@ sudo install --owner=root --group=root --mode=644 pe_env_setup $installDir/
 sudo sed -i "s|%%INSTALL_DIR%%|$installDir|g" $installDir/pe_env_setup
 
 sudo touch $installDir/.gepetools.install
-
-# Setup MPD daemon
-sudo rsync -a mpd $installDir/
-pushd $installDir/mpd
-sudo ./aimk
-popd
 
 # Add complex attributes
 qconf -sc >> /tmp/complexAttribs.$$

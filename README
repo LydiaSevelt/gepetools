@@ -50,11 +50,6 @@ pe_env_setup - Only very recent gridengine releases allow for
                You can now load modules and run tightly-integrated
                MPI jobs using mpirun/mpiexec
 
-mpdboot      - Takes the pain out of launching your MPD daemons
-               across the cluster.  Call it prior to mpirun/mpiexec
-               with any MPD-enabled MPI implementation.  Uses
-               tight-integration.
-
 extJobInfo   - How about some friggin' visibility into what your
                mpi processes are doing???
 
