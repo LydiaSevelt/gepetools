@@ -37,7 +37,7 @@ jsv_on_verify(){
   if [[ -z "$ppn" || -z "$nodes" ]]; then
     if [[ -n "$pcpus" || -n "$pcpus_min" || -n "$pcpus_max" ]]; then
       do_correct="true"
-      jsv_set_param pe_name "gepetools_*"
+      jsv_set_param pe_name "%%QUEUE_PREFIX%%_*"
       if [[ -n "$pcpus_min" && -n "$pcpus_max" ]]; then
         jsv_set_param pe_min "$pcpus_min"
         jsv_set_param pe_min "$pcpus_max"
