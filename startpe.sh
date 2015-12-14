@@ -29,41 +29,6 @@ PeHostfile2MPICH2MachineFile(){
     done < "$1"
 }
 
-PeHostfile2Ansys(){
-    local machines
-    local_host=$(hostname)
-    num_local_host=$(grep "$local_host" "$1" | awk '{print $2}')
-    machines="$local_host:$num_local_host"
-
-    for host in $(awk '{ print $1 }' "$1" | grep -v "$local_host"); do
-        num_procs=$(grep "$host" "$1" | awk '{ print $2 }')
-        machines="$machines:$host:$num_procs"
-    done
-    echo "$machines"
-}
-
-PeHostfile2Linda(){
-    local machines
-    while read -r line; do
-        host=$(echo "$line" | cut -f1 -d" " | cut -f1 -d".")
-        nslots=$(echo "$line" | cut -f2 -d" ")
-        if [ -n "$machines" ]; then
-            machines="$machines,$host:$nslots"
-        else
-            machines="$host:$nslots"
-        fi
-    done < "$1"
-    echo "$machines"
-}
-
-PeHostfile2LAMbootSchema(){
-    while read -r line; do
-        host=$(echo "$line" | cut -f1 -d" " | cut -f1 -d".")
-        nslots=$(echo "$line" | cut -f2 -d" ")
-        echo "$host cpu=$nslots"
-    done < "$1"
-}
-
 me=$(basename "$0")
 
 
@@ -89,9 +54,6 @@ PeHostfile2MPICHMachineFile "$pe_hostfile" >> "$TMPDIR/machines.mvapich2"
 PeHostfile2MPICH2MachineFile "$pe_hostfile" >> "$TMPDIR/machines.mpich2"
 PeHostfile2MPICHMachineFile "$pe_hostfile" >> "$TMPDIR/machines.hpmpi"
 PeHostfile2MPICH2MachineFile "$pe_hostfile" >> "$TMPDIR/machines.intelmpi"
-PeHostfile2LAMbootSchema "$pe_hostfile" >> "$TMPDIR/machines.lam"
-PeHostfile2Linda "$pe_hostfile" >> "$TMPDIR/machines.linda"
-PeHostfile2Ansys "$pe_hostfile" >> "$TMPDIR/machines.ansys"
 
 # Make script wrapper for 'rsh' available in jobs tmp dir
 rsh_wrapper=%%INSTALL_DIR%%/rsh

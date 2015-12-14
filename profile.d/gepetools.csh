@@ -23,7 +23,4 @@ if ( -n "${TMPDIR}" ) then
     setenv MPICH2_HOSTS ${TMPDIR}/machines.mpich2
     setenv HPMPI_HOSTS ${TMPDIR}/machines.hpmpi
     setenv INTELMPI_HOSTS ${TMPDIR}/machines.intelmpi
-    setenv LAM_HOSTS ${TMPDIR}/machines.lam
-    setenv ANSYS_HOSTS `cat ${TMPDIR}/machines.ansys`
-    setenv LINDA_HOSTS `cat ${TMPDIR}/machines.linda`
 end
