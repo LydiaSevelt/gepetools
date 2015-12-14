@@ -8,9 +8,9 @@ if [ -z "$JOBID" ]; then
 fi
 
 for pid in $(ls /proc | egrep '[0-9]+'); do
-  [[ "$USER" == "$(stat -c %U /proc/$pid)" ]] || continue
+  [[ "$USER" == "$(stat -c %U "/proc/$pid")" ]] || continue
   [[ -f "/proc/$pid/environ" ]] || continue
-  grep -q "JOB_ID=$JOBID" /proc/$pid/environ && pids="$pids,$pid"
+  grep -q "JOB_ID=$JOBID" "/proc/$pid/environ" && pids="$pids,$pid"
 done 
 
 pids=$(sed 's/^\,//g' <<<"$pids")
@@ -19,5 +19,5 @@ if [[ -z "$pids" ]]; then
   exit
 fi
 
-top -n 1 -b -M -p $pids | egrep '^[ ]*[0-9]+[ ]+[a-z0-9]+' \ 
+top -n 1 -b -M -p "$pids" | egrep '^[ ]*[0-9]+[ ]+[a-z0-9]+' \ 
   | awk '{ printf "%8s %8s %8s %8s %6s %6s %12s  %s\n", $1, $5, $6, $7, $9, $10, $11, $12 }'
