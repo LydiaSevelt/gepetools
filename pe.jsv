@@ -54,7 +54,7 @@ jsv_on_verify(){
     fi
   else
     if [[ -n "$ppn" && -n "$nodes" ]]; then
-      jsv_set_param pe_name "gepetools_*.${ppn}"
+      jsv_set_param pe_name "%%QUEUE_PREFIX%%_*.${ppn}"
       jsv_set_param pe_min $((ppn*nodes))
       jsv_set_param pe_max $((ppn*nodes))
     else

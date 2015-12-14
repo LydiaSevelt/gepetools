@@ -115,6 +115,7 @@ sudo sed -i "s|%%INSTALL_DIR%%|$installDir|g" $installDir/rshExtWrap
 sudo install --owner=root --group=root --mode=755 rsh $installDir/
 
 sudo install --owner=root --group=root --mode=755 pe.jsv $installDir/
+sudo sed -i "s|%%QUEUE_PREFIX%%|$QUEUE_PREFIX|g" $installDir/pe.jsv
 
 sudo install --owner=root --group=root --mode=644 pe_env_setup $installDir/
 sudo sed -i "s|%%INSTALL_DIR%%|$installDir|g" $installDir/pe_env_setup
