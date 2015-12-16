@@ -26,7 +26,7 @@ check_slot_limit(){
   readonly local slots=$1
   [[ -z $GE_EXPERT ]] || return
   if (( slots > $MAX_NUMBER_OF_SLOTS )); then
-    jsv_reject "You are trying to reserve more than 300 slots. This is not allowed. Reduce the number of cpus, nodes, ranks or processes"
+    jsv_reject "You are trying to reserve more than $MAX_NUMBER_OF_SLOTS slots ($slots). This is not allowed. Reduce the number of cpus, nodes, ranks or processes"
   fi
 }
 
@@ -34,7 +34,7 @@ check_node_limit(){
   readonly node_slots=$1
   [[ -z $GE_EXPERT ]] || return
   if (( node_slots > $MAX_NODE_SIZE)); then
-    jsv_reject "You are trying to reserve a bigger node than there is currently available (> 24 slots). Please reduce the number of ranks or the processes per rank"
+    jsv_reject "You are trying to reserve a bigger node than there is currently available ($node_slots > $MAX_NODE_SIZE slots). Please reduce the number of ranks or the processes per rank"
   fi
 }
 
