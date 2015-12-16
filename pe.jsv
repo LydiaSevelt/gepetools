@@ -27,17 +27,21 @@ jsv_on_start(){
 jsv_on_verify(){
   do_correct="false"
 
-  ppn=$(jsv_sub_get_param l_hard ppn)
+  ppr=$(jsv_sub_get_param l_hard ppr)
+  if [[ -n "$ppr" ]]; then
+    ppr=1
+  fi
+  rpn=$(jsv_sub_get_param l_hard rpn)
   pcpus=$(jsv_sub_get_param l_hard pcpus)
   pcpus_min=$(jsv_sub_get_param l_hard pcpus_min)
   pcpus_max=$(jsv_sub_get_param l_hard pcpus_max)
   nodes=$(jsv_sub_get_param l_hard nodes)
 
   # check if they have cpus instead
-  if [[ -z "$ppn" || -z "$nodes" ]]; then
+  if [[ -z "$rpn" || -z "$nodes" ]]; then
     if [[ -n "$pcpus" || -n "$pcpus_min" || -n "$pcpus_max" ]]; then
       do_correct="true"
-      jsv_set_param pe_name "gepetools_*"
+      jsv_set_param pe_name "%%QUEUE_PREFIX%%_*"
       if [[ -n "$pcpus_min" && -n "$pcpus_max" ]]; then
         jsv_set_param pe_min "$pcpus_min"
         jsv_set_param pe_min "$pcpus_max"
@@ -53,10 +57,13 @@ jsv_on_verify(){
       return
     fi
   else
-    if [[ -n "$ppn" && -n "$nodes" ]]; then
-      jsv_set_param pe_name "%%QUEUE_PREFIX%%_*.${ppn}"
-      jsv_set_param pe_min $((ppn*nodes))
-      jsv_set_param pe_max $((ppn*nodes))
+    if [[ -n "$rpn" && -n "$nodes" ]]; then
+      jsv_add_env "RANKS_PER_NODE" "$rpn"
+      jsv_add_env "PROCESSES_PER_RANK" "$ppr"
+
+      jsv_set_param pe_name "%%QUEUE_PREFIX%%_*.$((rpn*ppr))"
+      jsv_set_param pe_min $((rpn*nodes*ppr))
+      jsv_set_param pe_max $((rpn*nodes*ppr))
     else
       jsv_reject "Invalid parallel job configuration specified."
     fi

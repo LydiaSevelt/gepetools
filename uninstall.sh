@@ -21,13 +21,13 @@
 
 # remove PEs
 
+. config_install
+
 export installDir=$1
 if [ -z "$installDir" ]; then
     echo "Please specify an installation directory! Exiting..."
     exit 1
 fi
-
-export QUEUE_PREFIX=gepetools
 
 if [[ -d "$installDir" && -f "$installDir/.gepetools.install" ]]; then
     rm -rf "$installDir"
@@ -46,15 +46,8 @@ for pe in $(qconf -spl | grep "${QUEUE_PREFIX}_"); do
     qconf -dp "$pe"
 done
 
-# Add complex values to queues
-for queue in $(qconf -sql); do
-    qconf -dattr queue complex_values pcpus=99999 "$queue"
-    qconf -dattr queue complex_values nodes=99999 "$queue"
-    qconf -dattr queue complex_values ppn=99999 "$queue"
-done
-
 # Remove complex attributes
-qconf -sc | egrep -v '(pcpus|nodes|ppn)' >> /tmp/complexAttribs.$$
+qconf -sc | egrep -v '(pcpus|nodes|ppr|rpn)' >> /tmp/complexAttribs.$$
 qconf -Mc /tmp/complexAttribs.$$
 rm -f  /tmp/complexAttribs.$$
 

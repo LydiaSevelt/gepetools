@@ -19,6 +19,7 @@
 # Install script
 #
 
+. config_install
 # add our PEs
 function pe_exists(){
   qconf -spl 2>&1 | grep -q "^$1\$"
@@ -26,7 +27,6 @@ function pe_exists(){
 }
 
 export installDir=$1
-export QUEUE_PREFIX=gepetools
 
 if [[ -z "$installDir" ]]; then
   echo "Please specify an installation directory: "
@@ -36,7 +36,7 @@ fi
 
 mkdir -p $installDir
 chmod 755 $installDir
-ppns=( 1 2 3 4 5 6 8 10 12 16 24 32 )
+ppns=( 1 2 3 4 5 6 8 10 12 16 24 )
 
 for queue in $(qconf -sql); do
   if pe_exists ${QUEUE_PREFIX}_${queue}; then
@@ -126,7 +126,8 @@ qconf -sc >> /tmp/complexAttribs.$$
 cat >>/tmp/complexAttribs.$$ <<EOF
 pcpus              pcpus               INT       <=    YES       NO     0      0
 nodes              nodes               INT       <=    YES       NO     0      0
-ppn                ppn                 INT       <=    YES       NO     0      0
+ranks_per_node     rpn                 INT       <=    YES       NO     0      0
+processes_per_rank ppr                 INT       <=    YES       NO     0      0
 EOF
 qconf -Mc /tmp/complexAttribs.$$
 rm -f  /tmp/complexAttribs.$$
@@ -136,7 +137,8 @@ rm -f  /tmp/complexAttribs.$$
 for queue in $(qconf -sql); do
   qconf -mattr queue complex_values pcpus=99999 $queue
   qconf -mattr queue complex_values nodes=99999 $queue
-  qconf -mattr queue complex_values ppn=99999 $queue
+  qconf -mattr queue complex_values ranks_per_node=99999 $queue
+  qconf -mattr queue complex_values processes_per_rank=99999 $queue
 done
 
 exit
