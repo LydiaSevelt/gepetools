@@ -28,7 +28,7 @@ jsv_on_verify(){
   do_correct="false"
 
   ppr=$(jsv_sub_get_param l_hard ppr)
-  if [[ -n "$ppr" ]]; then
+  if [[ ! -n "$ppr" ]]; then
     ppr=1
   fi
   rpn=$(jsv_sub_get_param l_hard rpn)
