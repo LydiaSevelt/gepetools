@@ -126,7 +126,8 @@ qconf -sc >> /tmp/complexAttribs.$$
 cat >>/tmp/complexAttribs.$$ <<EOF
 pcpus              pcpus               INT       <=    YES       NO     0      0
 nodes              nodes               INT       <=    YES       NO     0      0
-ppn                ppn                 INT       <=    YES       NO     0      0
+ranks_per_node     rpn                 INT       <=    YES       NO     0      0
+processes_per_rank ppr                 INT       <=    YES       NO     0      0
 EOF
 qconf -Mc /tmp/complexAttribs.$$
 rm -f  /tmp/complexAttribs.$$
@@ -136,7 +137,8 @@ rm -f  /tmp/complexAttribs.$$
 for queue in $(qconf -sql); do
   qconf -mattr queue complex_values pcpus=99999 $queue
   qconf -mattr queue complex_values nodes=99999 $queue
-  qconf -mattr queue complex_values ppn=99999 $queue
+  qconf -mattr queue complex_values rpn=99999 $queue
+  qconf -mattr queue complex_values ppr=99999 $queue
 done
 
 exit

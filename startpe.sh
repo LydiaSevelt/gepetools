@@ -47,6 +47,20 @@ if [ ! -r "$pe_hostfile" ]; then
    exit 1
 fi
 
+# modify hostfile
+
+while read -r line; do
+  infos=( $line )
+  host=${infos[0]}
+  slots=${infos[1]}
+  ident=${infos[2]}
+  unknown=${infos[3]}
+
+  echo "$host $((slots/PROCESSES_PER_RANK)) $ident $unknown" >> "$TMPDIR/machines"
+done < "$pe_hostfile"
+
+pe_hostfile="$TMPDIR/machines"
+
 # create machine-files for MPIs
 PeHostfile2MPICHMachineFile "$pe_hostfile" >> "$TMPDIR/machines.mpich"
 PeHostfile2MPICHMachineFile "$pe_hostfile" >> "$TMPDIR/machines.mvapich"
