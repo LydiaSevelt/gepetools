@@ -21,8 +21,6 @@
 
 # remove PEs
 
-. config_install
-
 export installDir=$1
 if [ -z "$installDir" ]; then
     echo "Please specify an installation directory! Exiting..."
@@ -30,13 +28,14 @@ if [ -z "$installDir" ]; then
 fi
 
 if [[ -d "$installDir" && -f "$installDir/.gepetools.install" ]]; then
+    . "$installDir/.gepetools.install"
     rm -rf "$installDir"
 else
     echo "Specified installation directory, '$installDir', appears invalid! Bailing..."
     exit 1
 fi
 
-for queue in $(qconf -sql); do
+for queue in $QUEUE_LIST; do
     for pe in $(qconf -spl | grep "${QUEUE_PREFIX}_${queue}"); do
         qconf -dattr queue pe_list "$pe" "$queue"
     done

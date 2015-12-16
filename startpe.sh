@@ -47,16 +47,15 @@ if [ ! -r "$pe_hostfile" ]; then
    exit 1
 fi
 
-# modify hostfile
-
+# modify hostfile for hybrid jobs
 while read -r line; do
   infos=( $line )
   host=${infos[0]}
   slots=${infos[1]}
-  ident=${infos[2]}
-  unknown=${infos[3]}
+  queue=${infos[2]}
+  processor_range=${infos[3]}
 
-  echo "$host $((slots/PROCESSES_PER_RANK)) $ident $unknown" >> "$TMPDIR/machines"
+  echo "$host $((slots/PE_PROCESSES_PER_RANK)) $queue $processor_range" >> "$TMPDIR/machines"
 done < "$pe_hostfile"
 
 pe_hostfile="$TMPDIR/machines"

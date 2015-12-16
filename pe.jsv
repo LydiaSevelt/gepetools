@@ -19,6 +19,25 @@
 
 PATH=/bin:/usr/bin
 
+readonly MAX_NUMBER_OF_SLOTS=%%MAX_NUMBER_OF_SLOTS$%%
+readonly MAX_NODE_SIZE=%%MAX_NODE_SIZE%%
+
+check_slot_limit(){
+  readonly local slots=$1
+  [[ -z $GE_EXPERT ]] || return
+  if (( slots > $MAX_NUMBER_OF_SLOTS )); then
+    jsv_reject "You are trying to reserve more than 300 slots. This is not allowed. Reduce the number of cpus, nodes, ranks or processes"
+  fi
+}
+
+check_node_limit(){
+  readonly node_slots=$1
+  [[ -z $GE_EXPERT ]] || return
+  if (( node_slots > $MAX_NODE_SIZE)); then
+    jsv_reject "You are trying to reserve a bigger node than there is currently available (> 24 slots). Please reduce the number of ranks or the processes per rank"
+  fi
+}
+
 jsv_on_start(){
   # jsv_send_env
   return
@@ -43,13 +62,15 @@ jsv_on_verify(){
       do_correct="true"
       jsv_set_param pe_name "%%QUEUE_PREFIX%%_*"
       if [[ -n "$pcpus_min" && -n "$pcpus_max" ]]; then
+        check_slot_limit $pcpus_max
         jsv_set_param pe_min "$pcpus_min"
         jsv_set_param pe_min "$pcpus_max"
       elif [[ -n "$pcpus" ]]; then
+        check_slot_limit $pcpus
         jsv_set_param pe_min "$pcpus"
         jsv_set_param pe_max "$pcpus"
       else
-        jsv_reject "Invalid parallel job configuration specified."
+        jsv_reject "Invalid parallel job configuration specified"
         return
       fi
     else
@@ -58,8 +79,11 @@ jsv_on_verify(){
     fi
   else
     if [[ -n "$rpn" && -n "$nodes" ]]; then
-      jsv_add_env "RANKS_PER_NODE" "$rpn"
-      jsv_add_env "PROCESSES_PER_RANK" "$ppr"
+      check_slot_limit $((rpn*ppr*nodes))
+      check_node_limit $((rpn*ppr))
+
+      jsv_add_env "PE_RANKS_PER_NODE" "$rpn"
+      jsv_add_env "PE_PROCESSES_PER_RANK" "$ppr"
 
       jsv_set_param pe_name "%%QUEUE_PREFIX%%_*.$((rpn*ppr))"
       jsv_set_param pe_min $((rpn*nodes*ppr))

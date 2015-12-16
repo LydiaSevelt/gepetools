@@ -51,6 +51,6 @@ case "$ARC" in
    hp|hp10|hp11|hp11-64) rshcmd=remsh ;;
    *) ;;
 esac
-rm -f $TMPDIR/$rshcmd
+rm -f "$TMPDIR/$rshcmd"
 
 exit 0
