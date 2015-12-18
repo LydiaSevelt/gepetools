@@ -47,9 +47,8 @@ jsv_on_verify(){
   do_correct="false"
 
   ppr=$(jsv_sub_get_param l_hard ppr)
-  if [[ ! -n "$ppr" ]]; then
-    ppr=1
-  fi
+  [[ -n "$ppr" ]] || ppr=1
+
   rpn=$(jsv_sub_get_param l_hard rpn)
   pcpus=$(jsv_sub_get_param l_hard pcpus)
   pcpus_min=$(jsv_sub_get_param l_hard pcpus_min)
@@ -73,8 +72,6 @@ jsv_on_verify(){
         jsv_reject "Invalid parallel job configuration specified"
         return
       fi
-    else
-      jsv_accept "direct pe request" 
     fi
   else
     if [[ -n "$rpn" && -n "$nodes" ]]; then
@@ -83,6 +80,7 @@ jsv_on_verify(){
 
       jsv_add_env "PE_RANKS_PER_NODE" "$rpn"
       jsv_add_env "PE_PROCESSES_PER_RANK" "$ppr"
+      jsv_add_env "OMP_NUM_THREADS" "$ppr"
 
       jsv_set_param pe_name "%%QUEUE_PREFIX%%_*.$((rpn*ppr))"
       jsv_set_param pe_min $((rpn*nodes*ppr))
