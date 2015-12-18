@@ -41,8 +41,8 @@ chmod 755 "$installDir"
 ppns=($(seq 1 "$MAX_NODE_SIZE"))
 for queue in $QUEUE_LIST; do
   if pe_exists "${QUEUE_PREFIX}_${queue}"; then
-    echo "PE '${QUEUE_PREFIX}_${queue}' already exists! Bailing..."
-    exit 1
+    echo "PE '${QUEUE_PREFIX}_${queue}' already exists! Skipping..."
+    continue
   fi
 
   sed "s|%%INSTALL_DIR%%|$installDir|g" > /tmp/pefile.$$ <<EOF
@@ -67,9 +67,9 @@ for queue in $QUEUE_LIST; do
     pe=${QUEUE_PREFIX}_${queue}.${ppn}
    
     if pe_exists "$pe"; then
-      echo "PE '$pe' already exists! Bailing..."
+      echo "PE '$pe' already exists! Skipping..."
       rm -f /tmp/pefile.$$
-      exit 1
+      continue
     fi
 
     sed "s|%%INSTALL_DIR%%|$installDir|g" >/tmp/pefile.$$ <<EOF
