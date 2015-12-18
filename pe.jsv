@@ -19,7 +19,7 @@
 
 PATH=/bin:/usr/bin
 
-readonly MAX_NUMBER_OF_SLOTS=%%MAX_NUMBER_OF_SLOTS$%%
+readonly MAX_NUMBER_OF_SLOTS=%%MAX_NUMBER_OF_SLOTS%%
 readonly MAX_NODE_SIZE=%%MAX_NODE_SIZE%%
 
 check_slot_limit(){
