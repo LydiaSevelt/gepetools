@@ -57,12 +57,16 @@ startpe.sh
 
 stoppe.sh:
 ----------
+
   Cleans up the mess created by startpe.sh
 
 pe.jsv
 ------
-Job submit verification that translates the node, rpn, ppr syntax to GE
-native format.
+
+  Job submit verification that translates the node, rpn, ppr syntax to GE
+  native format. Also checks if the job fits on the available nodes and does
+  not exceed slot limits (defined statically in the JSV - if the limits change
+  the JSV needs to be updated).
 
 
 Installation
