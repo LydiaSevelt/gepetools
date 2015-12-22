@@ -30,7 +30,7 @@ Quick Start Example
 qsub -b y -q mpi.q -l nodes=3,rpn=10,ppr=2 "mpirun mpihello"
 ```
 
-This reserves 60 slots in total (3*10*2). There will be 10 ranks per node, with
+This reserves 60 slots in total. There will be 10 ranks per node, with
 2 processes per rank.
 When using rpn notation, following additional environment variables will be set:
 
@@ -79,6 +79,7 @@ Edit config_install to reflect your environment. Then run:
 
 Example Jobs
 ============
+
 
 1. OpenMPI
 
