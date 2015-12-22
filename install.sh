@@ -98,27 +98,12 @@ sed -i "s|%%INSTALL_DIR%%|$installDir|g" "$installDir/startpe.sh"
 install --mode=755 stoppe.sh "$installDir/"
 sed -i "s|%%INSTALL_DIR%%|$installDir|g" "$installDir/stoppe.sh"
 
-install --mode=755 getjidprocinfo "$installDir/"
-sed -i "s|%%INSTALL_DIR%%|$installDir|g" "$installDir/getjidprocinfo"
-
-install --mode=755 extJobInfo "$installDir/"
-sed -i "s|%%INSTALL_DIR%%|$installDir|g" "$installDir/extJobInfo"
-
-install --mode=755 rshExtJobInfo "$installDir/"
-sed -i "s|%%INSTALL_DIR%%|$installDir|g" "$installDir/rshExtJobInfo"
-
-install --mode=755 rshExtWrap "$installDir/"
-sed -i "s|%%INSTALL_DIR%%|$installDir|g" "$installDir/rshExtWrap"
-
 install --mode=755 rsh "$installDir/"
 
 install --mode=755 pe.jsv "$installDir/"
 sed -i "s|%%QUEUE_PREFIX%%|$QUEUE_PREFIX|g" "$installDir/pe.jsv"
 sed -i "s|%%MAX_NODE_SIZE%%|$MAX_NODE_SIZE|g" "$installDir/pe.jsv"
 sed -i "s|%%MAX_NUMBER_OF_SLOTS%%|$MAX_NUMBER_OF_SLOTS|g" "$installDir/pe.jsv"
-
-install --mode=644 pe_env_setup "$installDir/"
-sed -i "s|%%INSTALL_DIR%%|$installDir|g" "$installDir/pe_env_setup"
 
 cp config_install "$installDir/.gepetools.install"
 
