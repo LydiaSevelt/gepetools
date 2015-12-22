@@ -1,23 +1,42 @@
 #!/bin/bash
-# 
+#
 # Copyright 2012, Brian Smith
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
 # as published by the Free Software Foundation; either version 2
 # of the License, or (at your option) any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #
 
 PATH=/bin:/usr/bin
+
+readonly MAX_NUMBER_OF_SLOTS=%%MAX_NUMBER_OF_SLOTS%%
+readonly MAX_NODE_SIZE=%%MAX_NODE_SIZE%%
+
+check_slot_limit(){
+  readonly local slots=$1
+  [[ -z $GE_EXPERT ]] || return
+  if (( slots > $MAX_NUMBER_OF_SLOTS )); then
+    jsv_reject "You are trying to reserve more than $MAX_NUMBER_OF_SLOTS slots ($slots). This is not allowed. Reduce the number of cpus, nodes, ranks or processes"
+  fi
+}
+
+check_node_limit(){
+  readonly node_slots=$1
+  [[ -z $GE_EXPERT ]] || return
+  if (( node_slots > $MAX_NODE_SIZE)); then
+    jsv_reject "You are trying to reserve a bigger node than there is currently available ($node_slots > $MAX_NODE_SIZE slots). Please reduce the number of ranks or the processes per rank"
+  fi
+}
 
 jsv_on_start(){
   # jsv_send_env
@@ -27,41 +46,50 @@ jsv_on_start(){
 jsv_on_verify(){
   do_correct="false"
 
-  ppn=$(jsv_sub_get_param l_hard ppn)
+  ppr=$(jsv_sub_get_param l_hard ppr)
+  [[ -n "$ppr" ]] || ppr=1
+
+  rpn=$(jsv_sub_get_param l_hard rpn)
   pcpus=$(jsv_sub_get_param l_hard pcpus)
   pcpus_min=$(jsv_sub_get_param l_hard pcpus_min)
   pcpus_max=$(jsv_sub_get_param l_hard pcpus_max)
   nodes=$(jsv_sub_get_param l_hard nodes)
 
   # check if they have cpus instead
-  if [[ -z "$ppn" || -z "$nodes" ]]; then
+  if [[ -z "$rpn" || -z "$nodes" ]]; then
     if [[ -n "$pcpus" || -n "$pcpus_min" || -n "$pcpus_max" ]]; then
       do_correct="true"
       jsv_set_param pe_name "%%QUEUE_PREFIX%%_*"
       if [[ -n "$pcpus_min" && -n "$pcpus_max" ]]; then
+        check_slot_limit $pcpus_max
         jsv_set_param pe_min "$pcpus_min"
-        jsv_set_param pe_min "$pcpus_max"
+        jsv_set_param pe_max "$pcpus_max"
       elif [[ -n "$pcpus" ]]; then
+        check_slot_limit $pcpus
         jsv_set_param pe_min "$pcpus"
         jsv_set_param pe_max "$pcpus"
       else
-        jsv_reject "Invalid parallel job configuration specified."
+        jsv_reject "Invalid parallel job configuration specified"
         return
       fi
-    else
-      # no valid parallel request found
-      return
     fi
   else
-    if [[ -n "$ppn" && -n "$nodes" ]]; then
-      jsv_set_param pe_name "%%QUEUE_PREFIX%%_*.${ppn}"
-      jsv_set_param pe_min $((ppn*nodes))
-      jsv_set_param pe_max $((ppn*nodes))
+    if [[ -n "$rpn" && -n "$nodes" ]]; then
+      check_slot_limit $((rpn*ppr*nodes))
+      check_node_limit $((rpn*ppr))
+
+      jsv_add_env "PE_RANKS_PER_NODE" "$rpn"
+      jsv_add_env "PE_PROCESSES_PER_RANK" "$ppr"
+      jsv_add_env "OMP_NUM_THREADS" "$ppr"
+
+      jsv_set_param pe_name "%%QUEUE_PREFIX%%_*.$((rpn*ppr))"
+      jsv_set_param pe_min $((rpn*nodes*ppr))
+      jsv_set_param pe_max $((rpn*nodes*ppr))
     else
       jsv_reject "Invalid parallel job configuration specified."
     fi
   fi
-      
+
   if [[ "$do_correct" = "true" ]]; then
     jsv_correct "Job was modified before it was accepted"
   else

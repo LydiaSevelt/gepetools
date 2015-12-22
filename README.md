@@ -1,165 +1,107 @@
-
 About
 =====
 
-This package contains various scripts and code for creating
-"universal" parallel environments (PE).  These PEs are capable
-of handling jobs utilizing the following, tested, MPI 
-impementations:
+This package contains various scripts and code for creating "universal" parallel
+environments (PE). It also supports setting up hybrid OpenMPI/multihreaded PEs.
+These PEs are capable of handling jobs utilizing the following MPI implementations:
 
  * OpenMPI
  * HPMPI
  * Intel MPI
  * MVAPICH/MVAPICH2
  * MPICH/MPICH2
- * LAM/MPI
 
-Supported applications that use MPI but have their own methods of 
-executing parallel jobs:
+It introduces the syntax of node, ranks-per-node (rpn) and processes-per-rank (ppn)
+for MPI jobs. This is called nrp notation in this document.
 
- * ANSYS 13
- * Comsol 4.x
+This is a fork of the excellent [gepetools](https://github.com/brlindblom/gepetools).
+We got rid of the non-MPI support, as well as some of the additional stuff that has been in
+gepetools. Some bugs have been fixed, some features added, most notably:
 
-Other non-MPI message-passing/memory-sharing implementations that
-will be supported include
+* Hybrid job support (OpenMPI/multihreaded)
+* Improved installation procedure
 
- * Linda (of Gaussian fame)
+Testing has only been done for the OpenMPI case.
+
+Quick Start Example
+===================
+
+```
+qsub -b y -q mpi.q -l nodes=3,rpn=10,ppr=2 "mpirun mpihello"
+```
+
+This reserves 60 slots in total (3*10*2). There will be 10 ranks per node, with
+2 processes per rank.
+When using rpn notation, following additional environment variables will be set:
+
+* PE_RANKS_PER_NODE will be 10
+* PE_PROCESSES_PER_RANK will be 2
+* OMP_NUM_THREADS will be 2 - we are setting OMP_NUM_THREADS, so the user does not
+  need to
 
 
 Description of Files
 ====================
 
-* startpe.sh:
-  Called by start\_proc\_args, sets up necessary environment including machines files in $TMPDIR, 
-  mpdboot symlinks, etc.  Available machine files are
+startpe.sh
+----------
+
+  Called by start\_proc\_args, sets up necessary environment including machines files in $TMPDIR,
+  rsh symlinks, etc.  Available machine files are
   * machines.mpich
   * machines.mvapich
   * machines.mpich2
   * machines.mvapich2
   * machines.intelmpi
   * machines.hpmpi
- 
-* stoppe.sh:
+
+stoppe.sh:
+----------
   Cleans up the mess created by startpe.sh
 
-* pe\_env\_setup:
-  Only very recent gridengine releases allow for running parallel jobs from within an interactive
-  qlogin session.  This script allows that functionality by simply doing
-
-  ```
-  qlogin -pe mpi.4 8
-  ...
-  user@node:$ source $SGE_ROOT/gepetools/pe_env_setup
-  ```
-  You can now load modules and run tightly-integrated MPI jobs using mpirun/mpiexec
-
-* extJobInfo:
-  How about some friggin' visibility into what your mpi processes are doing???
-
-  Simply do:
-  ```
-  source $SGE_ROOT/gepetools/extJobInfo
-  ```
-  prior to your mpirun/mpiexec in your submit script. You'll be blessed with a file                
-  ${JOB_NAME}.${JOB_ID}.extJobInfo which will have process info for your job's (currently, master only) child processes
-  including memory, cpu and state information.
+pe.jsv
+------
+Job submit verification that translates the node, rpn, ppr syntax to GE
+native format.
 
 
 Installation
 ============
 
-This package can be extracted anywhere by the final installation 
-directory.  Its best if the installation directory is on a shared 
-directory.
+This package can be extracted anywhere by the final installation directory.  
+Its best if the installation directory is on a shared directory.
 
-Just run
+Edit config_install to reflect your environment. Then run:
 
 ```
 ./install.sh <install_dir>
 ```
 
-Example jobs using the JSV code
-===============================
+Example Jobs
+============
 
-You should be ready to submit jobs...
+1. OpenMPI
 
-Examples below:
+  ```
+  #$ ...
+  #$ -l nodes=8,rpn=12 # 96 slots, 12 ranks-per-node, 1 processes-per-rank
+  #$ ...
 
+  module add mpi/openmpi/1.4.4
 
-1. MPICH Example
+  mpirun myexecutable
+  ###
+  ```
 
-```
-#$ ... SGE directives ...
-#$ -l nodes=4,ppn=4   # 16 slots total, 4 ppn
-#$ ...
+2. OpenMPI Hybrid Job
 
-# Doesn't everyone use modules?
-module purge
-module add mpi/mpich/1.2.7
+  ```
+  #$ ...
+  #$ -l nodes=8,rpn=10,ppr=2 # 160 slots, 10 ranks-per-node, 2 processes-per-rank
+  #$ ...
 
-mpirun -np $NSLOTS -machinefile $MPICH\_HOSTS myexecutable
-###
-```
+  module add mpi/openmpi/1.4.4
 
-
-2. MPICH2/MVAPICH2 pre-hydra Example
-
-```
-#$ ...
-#$ -l pcpus=32      # 32 slots, round-robin
-#$ ...
-
-module purge
-module add mpi/mpich2/1.4
-
-mpdboot
-mpirun -np $NSLOTS myexecutable
-###
-```
-
-
-3. MPICH2/MVAPICH2/IntelMPI w/ Hydra
-
-```
-#$ ...
-#$ -l nodes=8,ppn=8 # 64 slots, 8 ppn
-#$ ...
-
-module purge
-module add mpi/intel/1.4
-
-mpiexec -n $NSLOTS myexecutable
-###
-```
-
-
-4. OpenMPI
-
-```
-#$ ...
-#$ -l nodes=8,ppn=12 # 96 slots, 12 ppn
-#$ ...
-
-module purge
-module add mpi/openmpi/1.4.4
-
-mpirun myexecutable
-###
-```
-
-5. LAM
-
-```
-#$ ...
-#$ -l nodes=2,ppn=4
-#$ ...
-
-module purge
-module add mpi/lam/7.1.4
-
-lamboot $LAM_HOSTS
-lamnodes
-mpirun -np $NSLOTS myexecutable
-lamclean
-###
-```
+  mpirun myexecutable
+  ###
+  ```

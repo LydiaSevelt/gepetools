@@ -1,0 +1,7 @@
+QUEUE_PREFIX=mpi
+
+# QUEUE_LIST=$(qconf -sql)
+QUEUE_LIST="openmpi-testing.q"
+
+MAX_NUMBER_OF_SLOTS=300
+MAX_NODE_SIZE=24
