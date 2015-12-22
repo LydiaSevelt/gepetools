@@ -48,6 +48,7 @@ if [ ! -r "$pe_hostfile" ]; then
 fi
 
 # modify hostfile for hybrid jobs
+[[ -n $PE_PROCESSES_PER_RANK ]] || PE_PROCESSES_PER_RANK=1
 while read -r line; do
   infos=( $line )
   host=${infos[0]}
@@ -57,7 +58,6 @@ while read -r line; do
 
   echo "$host $((slots/PE_PROCESSES_PER_RANK)) $queue $processor_range" >> "$TMPDIR/machines"
 done < "$pe_hostfile"
-
 pe_hostfile="$TMPDIR/machines"
 
 # create machine-files for MPIs
