@@ -23,5 +23,7 @@ if [[ -n $JOB_ID ]]; then
     export OMP_NUM_THREADS=$PE_PROCESSES_PER_RANK
   elif [[ -n $NSLOTS && $NHOSTS == 1 ]]; then
     export OMP_NUM_THREADS=$NSLOTS
+    export MKL_NUM_THREADS=$NSLOTS
+    export OPENBLAS_NUM_THREADS=$NSLOTS
   fi
 fi
