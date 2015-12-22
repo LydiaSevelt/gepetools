@@ -55,7 +55,7 @@ startpe.sh
   * machines.intelmpi
   * machines.hpmpi
 
-stoppe.sh:
+stoppe.sh
 ----------
 
   Cleans up the mess created by startpe.sh
