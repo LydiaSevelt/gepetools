@@ -21,6 +21,8 @@ if [[ -n $JOB_ID ]]; then
   # set OpenMP threads
   if [[ -n $PE_PROCESSES_PER_RANK ]]; then
     export OMP_NUM_THREADS=$PE_PROCESSES_PER_RANK
+    export MKL_NUM_THREADS=$PE_PROCESSES_PER_RANK
+    export OPENBLAS_NUM_THREADS=$PE_PROCESSES_PER_RANK
   elif [[ -n $NSLOTS && $NHOSTS == 1 ]]; then
     export OMP_NUM_THREADS=$NSLOTS
     export MKL_NUM_THREADS=$NSLOTS
