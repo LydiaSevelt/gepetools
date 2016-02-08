@@ -5,17 +5,18 @@ if [[ ! -n $JOB_ID ]]; then
   sge_process=$(ps -p $PPID -o cmd= | grep sge_shepherd)
   if [[ $? == 0 ]]; then
     export JOB_ID=$(echo "$sge_process" | awk '{ print $1 }' | cut -d'-' -f2)
-    ENVFILE=$SGE_ROOT/bioinfo/spool/$(hostname -s)/active_jobs/${JOB_ID}.1/environment
+    # Path is hardcoded because $SGE_ROOT is not set
+    ENVFILE=/gridengine/ge2011.11/bioinfo/spool/$(hostname -s)/active_jobs/${JOB_ID}.1/environment
 
     # if we have an qlogin and want to set the necessary environment variables
-    if [[ -f $ENVFILE ]]; then
+    if [[ -r $ENVFILE ]]; then
       eval $(egrep -v "^(PATH|LD_LIBRARY_PATH|DISPLAY)" $ENVFILE | sed 's/^/export /g')
 
       NP=$(awk -F'=' '/^PATH/ { print $2 }' $ENVFILE)
       NLLP=$(awk -F'=' '/^LD_LIBRARY_PATH/ { print $2 }' $ENVFILE)
 
       [[ -n "$NP" ]] && PATH=$NP:$PATH
-      [[ -n "$LLP" ]] && LD_LIBRARY_PATH=$LLP:$LD_LIBRARY_PATH
+      [[ -n "$NLLP" ]] && LD_LIBRARY_PATH=$NLLP:$LD_LIBRARY_PATH
 
       export PATH LD_LIBRARY_PATH
     fi
