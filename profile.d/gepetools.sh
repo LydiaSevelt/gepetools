@@ -5,18 +5,19 @@ if [[ ! -n $JOB_ID ]]; then
   sge_process=$(ps -p $PPID -o cmd= | grep sge_shepherd)
   if [[ $? == 0 ]]; then
     export JOB_ID=$(echo "$sge_process" | awk '{ print $1 }' | cut -d'-' -f2)
-    # Path is hardcoded because $SGE_ROOT is not set
-    ENVFILE=/gridengine/ge2011.11/bioinfo/spool/$(hostname -s)/active_jobs/${JOB_ID}.1/environment
+    # Path is hardcoded because $SGE_ROOT could be not set yet
+    hardcoded_sgeroot="/path/to/sgeroot"
+    ENVFILE="$hardcoded_sgeroot/spool/$(hostname -s)/active_jobs/${JOB_ID}.1/environment"
 
-    # if we have an qlogin and want to set the necessary environment variables
+    # set environment variables for interactive session
     if [[ -r $ENVFILE ]]; then
-      eval $(egrep -v "^(PATH|LD_LIBRARY_PATH|DISPLAY)" $ENVFILE | sed 's/^/export /g')
+      eval "$(egrep -v "^(PATH|LD_LIBRARY_PATH|DISPLAY)" "$ENVFILE" | sed 's/^/export /g')"
 
-      NP=$(awk -F'=' '/^PATH/ { print $2 }' $ENVFILE)
-      NLLP=$(awk -F'=' '/^LD_LIBRARY_PATH/ { print $2 }' $ENVFILE)
+      NP="$(awk -F'=' '/^PATH/ { print $2 }' "$ENVFILE")"
+      NLLP="$(awk -F'=' '/^LD_LIBRARY_PATH/ { print $2 }' "$ENVFILE")"
 
-      [[ -n "$NP" ]] && PATH=$NP:$PATH
-      [[ -n "$NLLP" ]] && LD_LIBRARY_PATH=$NLLP:$LD_LIBRARY_PATH
+      [[ -n "$NP" ]] && PATH="$NP:$PATH"
+      [[ -n "$NLLP" ]] && LD_LIBRARY_PATH="$NLLP:$LD_LIBRARY_PATH"
 
       export PATH LD_LIBRARY_PATH
     fi
@@ -36,7 +37,11 @@ if [[ -n $JOB_ID ]]; then
   # set OpenMP threads
   if [[ -n $PE_PROCESSES_PER_RANK ]]; then
     export OMP_NUM_THREADS=$PE_PROCESSES_PER_RANK
+    export MKL_NUM_THREADS=$PE_PROCESSES_PER_RANK
+    export OPENBLAS_NUM_THREADS=$PE_PROCESSES_PER_RANK
   elif [[ -n $NSLOTS && $NHOSTS == 1 ]]; then
     export OMP_NUM_THREADS=$NSLOTS
+    export MKL_NUM_THREADS=$NSLOTS
+    export OPENBLAS_NUM_THREADS=$NSLOTS
   fi
 fi

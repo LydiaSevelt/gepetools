@@ -37,7 +37,7 @@ When using rpn notation, following additional environment variables will be set:
 * PE_RANKS_PER_NODE will be 10
 * PE_PROCESSES_PER_RANK will be 2
 * OMP_NUM_THREADS will be 2 - we are setting OMP_NUM_THREADS, so the user does not
-  need to
+  need to (also MKL and OpenBLAS equivalents)
 
 
 Description of Files
@@ -80,6 +80,9 @@ Edit config_install to reflect your environment. Then run:
 ```
 ./install.sh <install_dir>
 ```
+
+You will also need to source the files in profile.d at job startup. For
+these startup scripts to work you need to modify the hardcoded SGE_ROOT path.
 
 Example Jobs
 ============
