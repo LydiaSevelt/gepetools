@@ -1,6 +1,18 @@
 About
 =====
 
+This is a fork of the excellent [gepetools](https://github.com/IMPIMBA/gepetools), which is 
+itself a fork of [gepetools](https://github.com/brlindblom/gepetools).
+
+The purpose of this fork is specifically to support OpenMPI/OpenMP hybrid environments on 
+Univa Grid Engine, though it should be compatible with Son of Grid engine. Changes introduced 
+in this fork include:
+
+ * Improved setup documentation
+ * Improved run time examples
+ * Univa grid engine compatibility
+ * Minor fixes
+
 This package contains various scripts and code for creating "universal" parallel
 environments (PE). It also supports setting up hybrid OpenMPI/multihreaded PEs.
 These PEs are capable of handling jobs utilizing the following MPI implementations:
@@ -14,20 +26,35 @@ These PEs are capable of handling jobs utilizing the following MPI implementatio
 It introduces the syntax of node, ranks-per-node (rpn) and processes-per-rank (ppn)
 for MPI jobs. This is called nrp notation in this document.
 
-This is a fork of the excellent [gepetools](https://github.com/brlindblom/gepetools).
-We got rid of the non-MPI support, as well as some of the additional stuff that has been in
-gepetools. Some bugs have been fixed, some features added, most notably:
-
-* Hybrid job support (OpenMPI/multihreaded)
-* Improved installation procedure
-
 Testing has only been done for the OpenMPI case.
+
+Installation
+============
+
+1. Edit config_install with proper values, I recommend you only install on a single queue, example:
+   ```
+   QUEUE_PREFIX=mpimp
+   
+   # QUEUE_LIST=$(qconf -sql)
+   QUEUE_LIST="openmpi-hybrid.q"
+   
+   MAX_NUMBER_OF_SLOTS=300
+   MAX_NODE_SIZE=24
+   ```
+
+2. Run the install.sh script providing the install directory (within your $SGE_ROOT) from within 
+   the gepetools directory. This process requires you run from an admin host as either your 
+   Grid engine admin user or root in order to write files to your $SGE_ROOT
+   ```
+   #$ cd gepetools/
+   #$ ./install.sh $SGE_ROOT/mpi_hybrid
+   ``` 
 
 Quick Start Example
 ===================
 
 ```
-qsub -b y -q mpi.q -l nodes=3,rpn=10,ppr=2 "mpirun mpihello"
+qsub -b y -q openmpi-hybrid.q -l nodes=3,rpn=10,ppr=2 -jsv /opt/UGE/mpi-mp/pe.jsv "mpirun -np 30 -hostfile $TMPDIR/machines mpihello"
 ```
 
 This reserves 60 slots in total. There will be 10 ranks per node, with
@@ -47,13 +74,15 @@ startpe.sh
 ----------
 
   Called by start\_proc\_args, sets up necessary environment including machines files in $TMPDIR,
-  rsh symlinks, etc.  Available machine files are
+  rsh symlinks, etc.  Available machine files are:
   * machines.mpich
   * machines.mvapich
   * machines.mpich2
   * machines.mvapich2
   * machines.intelmpi
   * machines.hpmpi
+
+  Only OpenMPI is tested at this time.
 
 stoppe.sh
 ----------
@@ -87,29 +116,24 @@ these startup scripts to work you need to modify the hardcoded SGE_ROOT path.
 Example Jobs
 ============
 
-
-1. OpenMPI
-
-  ```
-  #$ ...
-  #$ -l nodes=8,rpn=12 # 96 slots, 12 ranks-per-node, 1 processes-per-rank
-  #$ ...
-
-  module add mpi/openmpi/1.4.4
-
-  mpirun myexecutable
-  ###
-  ```
-
-2. OpenMPI Hybrid Job
+1. OpenMPI Hybrid Job
 
   ```
   #$ ...
+  #$ -jsv $SGE_ROOT/mpi_hybrid/pe.jsv
   #$ -l nodes=8,rpn=10,ppr=2 # 160 slots, 10 ranks-per-node, 2 processes-per-rank
   #$ ...
 
   module add mpi/openmpi/1.4.4
 
-  mpirun myexecutable
+  mpirun -np 80 -hostfile $TMPDIR/machines myexecutable
   ###
   ```
+
+  Option -jsv to use the pe.jsv for hybrid jobs is required.
+
+  MPI will not create the correct number of ranks or on the proper nodes unless
+  -np and -hostfile are provided manually. The -np number should be the number of 
+  nodes * number of ranks, in the example this number is 80. The -hostfile path for 
+  OpenMPI jobs is $TMPDIR/machines, other files are listed above, though are untested.
+  File formats may need to be adjusted.
