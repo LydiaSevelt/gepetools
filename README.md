@@ -1,8 +1,8 @@
 About
 =====
 
-This is a fork of the excellent [gepetools](https://github.com/IMPIMBA/gepetools), which is 
-itself a fork of [gepetools](https://github.com/brlindblom/gepetools).
+This is a fork of the excellent [IMPIMBA gepetools](https://github.com/IMPIMBA/gepetools), which is 
+itself a fork of the original [gepetools](https://github.com/brlindblom/gepetools).
 
 The purpose of this fork is specifically to support OpenMPI/OpenMP hybrid environments on 
 Univa Grid Engine, though it should be compatible with Son of Grid engine. Changes introduced 
@@ -54,7 +54,8 @@ Quick Start Example
 ===================
 
 ```
-qsub -b y -q openmpi-hybrid.q -l nodes=3,rpn=10,ppr=2 -jsv /opt/UGE/mpi-mp/pe.jsv "mpirun -np 30 -hostfile $TMPDIR/machines mpihello"
+qsub -b y -q openmpi-hybrid.q -l mnodes=3,rpn=10,ppr=2 -jsv /opt/UGE/mpi-mp/pe.jsv \
+"mpirun -np 30 -hostfile $TMPDIR/machines mpihello"
 ```
 
 This reserves 60 slots in total. There will be 10 ranks per node, with
@@ -121,13 +122,12 @@ Example Jobs
   ```
   #$ ...
   #$ -jsv $SGE_ROOT/mpi_hybrid/pe.jsv
-  #$ -l nodes=8,rpn=10,ppr=2 # 160 slots, 10 ranks-per-node, 2 processes-per-rank
+  #$ -l mnodes=8,rpn=10,ppr=2 # 160 slots, 10 ranks-per-node, 2 processes-per-rank
   #$ ...
 
   module add mpi/openmpi/1.4.4
 
   mpirun -np 80 -hostfile $TMPDIR/machines myexecutable
-  ###
   ```
 
   Option -jsv to use the pe.jsv for hybrid jobs is required.
