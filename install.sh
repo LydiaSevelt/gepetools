@@ -56,7 +56,9 @@ allocation_rule    \$fill_up
 control_slaves     TRUE
 job_is_first_task  FALSE
 urgency_slots    min
-accounting_summary FALSE
+accounting_summary TRUE
+daemon_forks_slaves TRUE
+master_forks_slaves FALSE
 EOF
   qconf -Ap /tmp/pefile.$$
   qconf -mattr queue pe_list "${QUEUE_PREFIX}_${queue}" "$queue"
@@ -83,7 +85,9 @@ allocation_rule    $ppn
 control_slaves     TRUE
 job_is_first_task  FALSE
 urgency_slots    min
-accounting_summary FALSE
+accounting_summary TRUE
+daemon_forks_slaves TRUE
+master_forks_slaves FALSE
 EOF
     qconf -Ap /tmp/pefile.$$
     qconf -mattr queue pe_list "$pe" "$queue"
@@ -111,7 +115,7 @@ cp config_install "$installDir/.gepetools.install"
 qconf -sc >> /tmp/complexAttribs.$$
 cat >>/tmp/complexAttribs.$$ <<EOF
 pcpus              pcpus               INT       <=    YES       NO     0      0
-nodes              nodes               INT       <=    YES       NO     0      0
+mnodes              mnodes               INT       <=    YES       NO     0      0
 ranks_per_node     rpn                 INT       <=    YES       NO     0      0
 processes_per_rank ppr                 INT       <=    YES       NO     0      0
 EOF
@@ -122,7 +126,7 @@ rm -f  /tmp/complexAttribs.$$
 # TODO: Change this to global host configuration
 for queue in $QUEUE_LIST; do
   qconf -mattr queue complex_values pcpus=99999 "$queue"
-  qconf -mattr queue complex_values nodes=99999 "$queue"
+  qconf -mattr queue complex_values mnodes=99999 "$queue"
   qconf -mattr queue complex_values ranks_per_node=99999 "$queue"
   qconf -mattr queue complex_values processes_per_rank=99999 "$queue"
 done
