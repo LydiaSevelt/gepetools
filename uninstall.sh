@@ -46,7 +46,7 @@ for pe in $(qconf -spl | grep "${QUEUE_PREFIX}_"); do
 done
 
 # Remove complex attributes
-qconf -sc | egrep -v '(pcpus|nodes|ppr|rpn)' >> /tmp/complexAttribs.$$
+qconf -sc | egrep -v '(pcpus|mnodes|ppr|rpn)' >> /tmp/complexAttribs.$$
 qconf -Mc /tmp/complexAttribs.$$
 rm -f  /tmp/complexAttribs.$$
 
