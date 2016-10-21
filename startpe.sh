@@ -48,6 +48,7 @@ if [ ! -r "$pe_hostfile" ]; then
 fi
 
 # modify hostfile for hybrid jobs
+#  echo "$host $(($slots/$PE_PROCESSES_PER_RANK)) $queue $processor_range" >> "$TMPDIR/machines"
 [[ -n $PE_PROCESSES_PER_RANK ]] || PE_PROCESSES_PER_RANK=1
 while read -r line; do
   infos=( $line )
@@ -56,7 +57,7 @@ while read -r line; do
   queue=${infos[2]}
   processor_range=${infos[3]}
 
-  echo "$host $((slots/PE_PROCESSES_PER_RANK)) $queue $processor_range" >> "$TMPDIR/machines"
+  echo "$host slots=$(($slots/$PE_PROCESSES_PER_RANK))">> "$TMPDIR/machines"
 done < "$pe_hostfile"
 pe_hostfile="$TMPDIR/machines"
 
