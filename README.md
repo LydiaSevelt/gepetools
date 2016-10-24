@@ -42,19 +42,27 @@ Installation
    MAX_NODE_SIZE=24
    ```
 
-2. Run the install.sh script providing the install directory (within your $SGE_ROOT) from within 
-   the gepetools directory. This process requires you run from an admin host as either your 
-   Grid engine admin user or root in order to write files to your $SGE_ROOT
+2. Run the install.sh script providing the install directory (within your $SGE_ROOT) from 
+   within the gepetools directory. This process requires you run from an admin host as 
+   either your Grid engine admin user or root in order to write files to your $SGE_ROOT
    ```
    #$ cd gepetools/
    #$ ./install.sh $SGE_ROOT/mpi_hybrid
    ``` 
 
+3. *CURRENTLY NOT WORKING* There are also files in profile.d that can be sourced 
+   at job startup. Currently using them does not work for me, and improper number 
+   of MPI process will be created, or will not be distributed correctly. These 
+   startup scripts to work you need to modify the hardcoded SGE_ROOT path, however 
+   if you have your spool directory in a different directory, then you will have 
+   to supply the path to your spool directory so that the job environment files 
+   can be read.
+
 Quick Start Example
 ===================
 
 ```
-qsub -b y -q openmpi-hybrid.q -l mnodes=3,rpn=10,ppr=2 -jsv /opt/UGE/mpi-mp/pe.jsv \
+qsub -b y -q openmpi-hybrid.q -l mnodes=3,rpn=10,ppr=2 -jsv /opt/UGE/mpi_hybrid/pe.jsv \
 "mpirun -np 30 -hostfile $TMPDIR/machines mpihello"
 ```
 
@@ -98,22 +106,6 @@ pe.jsv
   not exceed slot limits (defined statically in the JSV - if the limits change
   the JSV needs to be updated).
 
-
-Installation
-============
-
-This package can be extracted anywhere by the final installation directory.  
-Its best if the installation directory is on a shared directory.
-
-Edit config_install to reflect your environment. Then run:
-
-```
-./install.sh <install_dir>
-```
-
-You will also need to source the files in profile.d at job startup. For
-these startup scripts to work you need to modify the hardcoded SGE_ROOT path.
-
 Example Jobs
 ============
 
@@ -125,7 +117,7 @@ Example Jobs
   #$ -l mnodes=8,rpn=10,ppr=2 # 160 slots, 10 ranks-per-node, 2 processes-per-rank
   #$ ...
 
-  module add mpi/openmpi/1.4.4
+  module add openmpi-1.4.4
 
   mpirun -np 80 -hostfile $TMPDIR/machines myexecutable
   ```
