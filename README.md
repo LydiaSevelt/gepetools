@@ -51,8 +51,8 @@ Installation
    ``` 
 
 3. *CURRENTLY NOT WORKING* There are also files in profile.d that can be sourced 
-   at job startup. Currently using them does not work for me, and improper number 
-   of MPI process will be created, or will not be distributed correctly. These 
+   at job startup. Currently using them does not work for me, an improper number 
+   of MPI process will be created, or will not be distributed correctly. For these 
    startup scripts to work you need to modify the hardcoded SGE_ROOT path, however 
    if you have your spool directory in a different directory, then you will have 
    to supply the path to your spool directory so that the job environment files 
