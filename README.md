@@ -8,9 +8,9 @@ The purpose of this fork is specifically to support OpenMPI/OpenMP hybrid enviro
 Univa Grid Engine, though it should be compatible with Son of Grid engine. Changes introduced 
 in this fork include:
 
- * Improved setup documentation
- * Improved run time examples
  * Univa grid engine compatibility
+ * Univa grid engine specific setup documentation
+ * Univa grid engine run time examples
  * Minor fixes
 
 This package contains various scripts and code for creating "universal" parallel
@@ -133,7 +133,12 @@ Example Jobs
   Option -jsv to use the pe.jsv for hybrid jobs is required.
 
   MPI will not create the correct number of ranks or on the proper nodes unless
-  -np and -hostfile are provided manually. The -np number should be the number of 
-  nodes * number of ranks, in the example this number is 80. The -hostfile path for 
-  OpenMPI jobs is $TMPDIR/machines, other files are listed above, though are untested.
+  -np and -hostfile are provided manually.
+
+  The -np number should be the number of nodes * number of ranks, in the example 
+  this number is 80.
+
+  The -hostfile path for OpenMPI jobs is $TMPDIR/machines, other files are 
+  listed above, though are untested.
+
   File formats may need to be adjusted.
