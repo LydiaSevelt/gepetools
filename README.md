@@ -113,6 +113,7 @@ Example Jobs
 
   ```
   #$ ...
+  #$ -q openmpi-hybrid.q
   #$ -jsv $SGE_ROOT/mpi_hybrid/pe.jsv
   #$ -l mnodes=8,rpn=10,ppr=2 # 160 slots, 10 ranks-per-node, 2 processes-per-rank
   #$ ...
